@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Karan Patel | Full Stack Developer, Toronto</title>
+<meta name="description" content="Karan Patel is a Java and React full stack developer in Toronto. Licensing and entitlement platforms, telecom software, and applied LLM work." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #F6F8FC;
+    --surface: #FFFFFF;
+    --ink: #0E1726;
+    --ink-soft: #34405A;
+    --muted: #5F6B80;
+    --line: #E0E6F0;
+    --line-strong: #C6D0E0;
+    --trust: #2447C9;
+    --trust-soft: #E9EEFC;
+    --energy: #F29A26;
+    --energy-ink: #1A1206;
+    --growth: #3FD08B;
+    --dot: #DCE3EE;
+    --hero-a: #0B1F55;
+    --hero-b: #163A8F;
+    --on-hero: #F4F7FF;
+    --on-hero-soft: #BCC9EA;
+    --hero-line: rgba(255, 255, 255, 0.14);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #0A101C;
+      --surface: #111A2B;
+      --ink: #E7EDF7;
+      --ink-soft: #C0CAD9;
+      --muted: #8E9BB2;
+      --line: #1D283C;
+      --line-strong: #2C3A52;
+      --trust: #86A6FF;
+      --trust-soft: rgba(134, 166, 255, 0.14);
+      --energy: #FFB04D;
+      --dot: #1E2A3E;
+      --hero-a: #060E26;
+      --hero-b: #0E2463;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #0A101C;
+    --surface: #111A2B;
+    --ink: #E7EDF7;
+    --ink-soft: #C0CAD9;
+    --muted: #8E9BB2;
+    --line: #1D283C;
+    --line-strong: #2C3A52;
+    --trust: #86A6FF;
+    --trust-soft: rgba(134, 166, 255, 0.14);
+    --energy: #FFB04D;
+    --dot: #1E2A3E;
+    --hero-a: #060E26;
+    --hero-b: #0E2463;
+  }
+  :root[data-theme="light"] {
+    --canvas: #F6F8FC;
+    --surface: #FFFFFF;
+    --ink: #0E1726;
+    --ink-soft: #34405A;
+    --muted: #5F6B80;
+    --line: #E0E6F0;
+    --line-strong: #C6D0E0;
+    --trust: #2447C9;
+    --trust-soft: #E9EEFC;
+    --energy: #F29A26;
+    --dot: #DCE3EE;
+    --hero-a: #0B1F55;
+    --hero-b: #163A8F;
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(76px + env(safe-area-inset-top, 0px)); background: var(--canvas); }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; }
+  p { margin: 0; }
+  :focus-visible { outline: 2px solid var(--energy); outline-offset: 3px; border-radius: 6px; }
+
+  .display { font-stretch: 75%; font-weight: 650; letter-spacing: -0.015em; line-height: 1.08; margin: 0; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+    padding-top: env(safe-area-inset-top, 0px);
+    color: var(--ink);
+    background: var(--canvas);
+    background: color-mix(in srgb, var(--canvas) 88%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    transition: background-color .35s ease, color .35s ease, border-color .35s ease;
+  }
+  .nav.on-hero { background: transparent; color: var(--on-hero); border-bottom-color: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 20px; }
+  .brand { font-weight: 650; font-stretch: 75%; font-size: 1.2rem; letter-spacing: -0.01em; text-decoration: none; white-space: nowrap; }
+  .nav-links { display: flex; align-items: center; gap: 26px; }
+  .nav-links a { text-decoration: none; font-size: 0.94rem; opacity: 0.75; transition: opacity .15s ease; }
+  .nav-links a:hover { opacity: 1; }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: 8px; cursor: pointer; flex: none;
+    border: 1px solid var(--line-strong); background: var(--surface); color: inherit;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: border-color .2s ease, background-color .2s ease;
+  }
+  .icon-btn:hover { border-color: var(--energy); }
+  .nav.on-hero .icon-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.28); }
+  .progress {
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    transform-origin: 0 50%; transform: scaleX(var(--progress, 0));
+    background: linear-gradient(90deg, var(--trust), var(--energy));
+  }
+  @media (max-width: 640px) { .nav-links .opt { display: none; } .nav-links { gap: 18px; } }
+
+  /* ---------- Hero (trust navy) ---------- */
+  .hero, .contact {
+    position: relative; overflow: hidden; color: var(--on-hero);
+    background:
+      radial-gradient(1100px 560px at 80% -10%, rgba(88, 128, 255, 0.36), transparent 60%),
+      radial-gradient(800px 460px at 8% 115%, rgba(242, 154, 38, 0.18), transparent 60%),
+      linear-gradient(160deg, var(--hero-a), var(--hero-b));
+  }
+  .hero { padding: 156px 0 180px; }
+  .waves { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .hero .container, .contact .container { position: relative; z-index: 1; }
+  .hero-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 56px; align-items: end; }
+  .hero-name { font-size: clamp(3.2rem, 8.6vw, 6.1rem); font-weight: 700; color: #FFFFFF; }
+  .word { display: inline-block; white-space: nowrap; }
+  .ch { display: inline-block; }
+  .hero-role { margin-top: 14px; font-size: clamp(1.15rem, 2.2vw, 1.45rem); font-weight: 500; color: var(--on-hero); }
+  .hero-summary { margin-top: 24px; max-width: 54ch; font-size: 1.1rem; color: var(--on-hero-soft); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+
+  .btn {
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; gap: 9px;
+    height: 48px; padding: 0 22px; border-radius: 10px;
+    font: inherit; font-size: 0.98rem; font-weight: 650; text-decoration: none; cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform .2s ease, box-shadow .25s ease, border-color .2s ease;
+  }
+  .btn-energy { background: var(--energy); color: var(--energy-ink); box-shadow: 0 8px 24px -10px rgba(242, 154, 38, 0.8); }
+  .btn-energy::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 45%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: skewX(-18deg); transition: left .65s ease;
+  }
+  .btn-energy:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(242, 154, 38, 0.95); }
+  .btn-energy:hover::after { left: 125%; }
+  .btn-ghost { background: transparent; color: var(--on-hero); border-color: rgba(255,255,255,0.32); }
+  .btn-ghost:hover { border-color: #FFFFFF; transform: translateY(-2px); }
+
+  .panel {
+    position: relative; overflow: hidden;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--hero-line); border-radius: 16px;
+    padding: 24px 26px 8px;
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  .panel::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s ease;
+    background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(242, 154, 38, 0.2), transparent 65%);
+  }
+  .panel:hover::before { opacity: 1; }
+  .panel > * { position: relative; }
+  .status { display: flex; align-items: center; gap: 11px; font-weight: 650; font-size: 0.96rem; padding-bottom: 18px; border-bottom: 1px solid var(--hero-line); color: #FFFFFF; }
+  .status-dot { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--growth); flex: none; }
+  .facts { margin: 0; }
+  .facts div { padding: 14px 0; border-bottom: 1px solid var(--hero-line); }
+  .facts div:last-child { border-bottom: none; }
+  .facts dt { font-size: 0.84rem; color: var(--on-hero-soft); }
+  .facts dd { margin: 2px 0 0; font-size: 0.98rem; color: #FFFFFF; }
+
+  /* ---------- Sections ---------- */
+  .section { padding: 96px 0; }
+  .section + .section { border-top: 1px solid var(--line); }
+  .section-title { font-size: clamp(1.9rem, 3.8vw, 2.6rem); }
+  .title-bar { width: 52px; height: 3px; border-radius: 3px; margin-top: 16px; background: linear-gradient(90deg, var(--trust), var(--energy)); transform-origin: left center; }
+  .section-intro { margin-top: 16px; color: var(--muted); max-width: 60ch; }
+
+  .case { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: start; padding: 56px 0; }
+  .case + .case { border-top: 1px solid var(--line); }
+  .case-title { font-size: clamp(1.6rem, 3vw, 2.05rem); }
+  .case-meta { margin-top: 8px; color: var(--muted); font-size: 0.95rem; }
+  .case-lead { margin-top: 20px; max-width: 60ch; }
+  .outcomes { list-style: none; margin: 26px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .outcomes li { position: relative; padding: 12px 0 12px 24px; border-bottom: 1px solid var(--line); font-size: 0.98rem; color: var(--ink-soft); }
+  .outcomes li::before { content: ""; position: absolute; left: 2px; top: 23px; width: 11px; height: 2px; border-radius: 2px; background: var(--energy); }
+  .outcomes strong { color: var(--ink); font-weight: 650; }
+  .num { font-variant-numeric: tabular-nums; color: var(--trust); }
+  .role-note { margin-top: 22px; font-size: 0.97rem; color: var(--ink-soft); max-width: 60ch; }
+  .role-note b, .built-with b { color: var(--ink); font-weight: 650; }
+  .built-with { margin-top: 14px; font-size: 0.93rem; color: var(--muted); max-width: 60ch; }
+
+  .figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 60px -40px rgba(20, 45, 120, 0.35); }
+  .figure-canvas { padding: 26px 22px; background-image: radial-gradient(var(--dot) 1.1px, transparent 1.1px); background-size: 18px 18px; }
+  .figure figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 20px; border-top: 1px solid var(--line); font-size: 0.86rem; color: var(--muted); }
+  .link-btn { flex: none; background: none; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--trust); font: inherit; font-size: 0.84rem; font-weight: 650; padding: 5px 12px; cursor: pointer; }
+  .link-btn:hover { border-color: var(--trust); }
+
+  .fx { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+  .fx-box { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.3; }
+  .fx-box.key { stroke: var(--energy); stroke-width: 1.8; }
+  .fx-title { font-family: "Instrument Sans", Arial, sans-serif; font-size: 15px; font-weight: 650; fill: var(--ink); }
+  .fx-sub { font-family: "Instrument Sans", Arial, sans-serif; font-size: 12.5px; fill: var(--muted); }
+  .fx-path { fill: none; stroke: var(--trust); stroke-width: 1.8; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .fx-arrow { fill: var(--trust); }
+  .fx-packet { fill: var(--energy); }
+  .fx-halo { fill: var(--energy); opacity: 0.25; }
+  .figure.will-draw .fx-path { stroke-dashoffset: 1; transition: stroke-dashoffset .9s ease; }
+  .figure.will-draw .fx-path.p2 { transition-delay: .15s; }
+  .figure.will-draw .fx-path.p3 { transition-delay: .9s; }
+  .figure.will-draw .fx-arrow { opacity: 0; transition: opacity .3s ease 1.5s; }
+  .figure.will-draw.drawn .fx-path { stroke-dashoffset: 0; }
+  .figure.will-draw.drawn .fx-arrow { opacity: 1; }
+  .figure.flowing .fx-box.key { animation: keyGlow 2.4s ease-in-out infinite; }
+  @keyframes keyGlow {
+    0%, 100% { filter: drop-shadow(0 0 0 rgba(242, 154, 38, 0)); }
+    50% { filter: drop-shadow(0 0 9px rgba(242, 154, 38, 0.7)); }
+  }
+
+  .qa { display: flex; flex-direction: column; gap: 12px; min-height: 430px; }
+  .bubble { max-width: 88%; padding: 11px 15px; font-size: 0.93rem; line-height: 1.5; }
+  .bubble.q { align-self: flex-end; background: var(--trust-soft); color: var(--ink); border-radius: 14px 14px 4px 14px; }
+  .bubble.a { align-self: flex-start; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px 14px 14px 4px; }
+  .bubble.a.unknown { border-style: dashed; }
+  .bubble.typing { display: inline-flex; gap: 5px; padding: 15px 16px; }
+  .bubble.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .source { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 0.82rem; color: var(--trust); font-weight: 650; }
+  .gap-note { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
+
+  .others { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 24px; padding-top: 48px; border-top: 1px solid var(--line); }
+  .others-title { font-size: 1.3rem; grid-column: 1 / -1; margin-bottom: -12px; }
+  .other h4 { margin: 0; font-size: 1.1rem; font-weight: 650; }
+  .other .case-meta { margin-top: 2px; font-size: 0.9rem; }
+  .other p.body { margin-top: 10px; color: var(--ink-soft); font-size: 0.97rem; max-width: 52ch; }
+
+  /* ---------- Experience with scroll rail ---------- */
+  .jobs { position: relative; margin-top: 44px; border-bottom: 1px solid var(--line); }
+  .rail { position: absolute; left: -22px; top: 0; bottom: 0; width: 2px; background: var(--line); border-radius: 2px; }
+  .rail-fill { position: absolute; inset: 0; border-radius: 2px; transform-origin: top center; transform: scaleY(var(--rail, 0)); background: linear-gradient(180deg, var(--trust), var(--energy)); }
+  .job { position: relative; padding: 30px 0; border-top: 1px solid var(--line); }
+  .job-node {
+    position: absolute; left: -27px; top: 36px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--canvas); border: 2px solid var(--line-strong);
+    transition: background-color .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+  .job-node.lit { background: var(--energy); border-color: var(--energy); box-shadow: 0 0 0 5px color-mix(in srgb, var(--energy) 22%, transparent); }
+  .job-inner { display: grid; grid-template-columns: 210px 1fr; gap: 32px; }
+  .job-date { color: var(--muted); font-size: 0.95rem; font-variant-numeric: tabular-nums; padding-top: 3px; }
+  .job-title { font-size: 1.4rem; }
+  .job-org { margin-top: 4px; color: var(--muted); }
+  .job ul { margin: 14px 0 0; padding-left: 18px; max-width: 68ch; }
+  .job li { margin-bottom: 8px; color: var(--ink-soft); }
+  .job li::marker { color: var(--trust); }
+
+  .skills { margin-top: 44px; border-bottom: 1px solid var(--line); }
+  .skill-row { display: grid; grid-template-columns: 210px 1fr; gap: 32px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .skill-label { font-weight: 650; }
+  .skill-items { color: var(--ink-soft); }
+
+  /* ---------- Contact (trust navy close) ---------- */
+  .contact { padding: 110px 0 100px; }
+  .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: end; }
+  .contact h2 { font-size: clamp(2.4rem, 5.8vw, 4rem); font-weight: 700; color: #FFFFFF; }
+  .contact-lead { margin-top: 18px; color: var(--on-hero-soft); max-width: 46ch; font-size: 1.08rem; }
+  .contact .actions { margin-top: 28px; }
+  .contact-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hero-line); }
+  .contact-list li { border-bottom: 1px solid var(--hero-line); }
+  .contact-list a { display: flex; align-items: center; gap: 12px; padding: 16px 2px; text-decoration: none; font-size: 1.05rem; color: #FFFFFF; transition: color .15s ease, padding-left .25s ease; }
+  .contact-list a:hover { color: var(--energy); padding-left: 8px; }
+  .contact-list .lbl { margin-left: auto; font-size: 0.85rem; color: var(--on-hero-soft); }
+
+  .footer { padding: 26px 0 34px; }
+  .footer-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 0.87rem; }
+
+  /* ---------- Motion (only when the visitor allows it) ---------- */
+  .motion .ch { opacity: 0; transform: translateY(0.55em) rotate(6deg); animation: chIn .8s cubic-bezier(.2,.75,.2,1) forwards; }
+  .motion .hero-in { opacity: 0; transform: translateY(18px); animation: fadeUp .8s cubic-bezier(.2,.75,.2,1) forwards; }
+  .motion .hero-in.d1 { animation-delay: .55s; }
+  .motion .hero-in.d2 { animation-delay: .7s; }
+  .motion .hero-in.d3 { animation-delay: .85s; }
+  .motion .hero-in.d4 { animation-delay: 1.05s; }
+  .motion .status-dot::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--growth); animation: ping 2.2s ease-out infinite; }
+  .motion .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.75,.2,1); }
+  .motion .reveal.in { opacity: 1; transform: none; }
+  .motion .reveal .title-bar { transform: scaleX(0); transition: transform .9s cubic-bezier(.2,.75,.2,1) .25s; }
+  .motion .reveal.in .title-bar { transform: scaleX(1); }
+  .motion .bubble { animation: bubbleIn .45s cubic-bezier(.2,.75,.2,1) both; }
+  .motion .bubble.typing span { animation: blink 1.2s ease-in-out infinite; }
+  .motion .bubble.typing span:nth-child(2) { animation-delay: .15s; }
+  .motion .bubble.typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes chIn { to { opacity: 1; transform: none; } }
+  @keyframes fadeUp { to { opacity: 1; transform: none; } }
+  @keyframes ping { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(2.3); opacity: 0; } }
+  @keyframes bubbleIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+  @media (max-width: 900px) {
+    .hero { padding: 120px 0 170px; }
+    .hero-grid, .case, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .job-inner, .skill-row { grid-template-columns: 1fr; gap: 6px; }
+    .job-date { padding-top: 0; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 20px; }
+    .section { padding: 76px 0; }
+    .others { grid-template-columns: 1fr; gap: 32px; }
+    .contact-list .lbl { display: none; }
+    .rail { left: -12px; }
+    .job-node { left: -17px; }
+    .jobs { margin-left: 6px; }
+    .qa { min-height: 480px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+"use strict";
+var h = React.createElement;
+var REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+if (!REDUCED) { document.documentElement.classList.add("motion"); }
+
+/* ---------- Icons ---------- */
+function Icon(props) {
+  var s = props.size || 18;
+  return h("svg", { width: s, height: s, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+    strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" }, props.children);
+}
+function MailIcon(p) { return h(Icon, p, h("rect", { x: 3, y: 5, width: 18, height: 14, rx: 2 }), h("path", { d: "M3.5 6.5 12 13l8.5-6.5" })); }
+function PhoneIcon(p) { return h(Icon, p, h("path", { d: "M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.5 21 3 13.5 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z" })); }
+function LinkIcon(p) { return h(Icon, p, h("path", { d: "M9.5 14.5 14.5 9.5" }), h("path", { d: "M11 6.5 12.6 5A3.6 3.6 0 1 1 17.6 10l-1.5 1.6" }), h("path", { d: "M13 17.5 11.4 19A3.6 3.6 0 1 1 6.4 14l1.5-1.6" })); }
+function DocIcon(p) { return h(Icon, p, h("path", { d: "M7 3h7l4 4v14H7z" }), h("path", { d: "M14 3v4h4" }), h("path", { d: "M10 12h5M10 16h5" })); }
+function SunIcon(p) { return h(Icon, p, h("circle", { cx: 12, cy: 12, r: 4 }), h("path", { d: "M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6" })); }
+function MoonIcon(p) { return h(Icon, p, h("path", { d: "M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z" })); }
+
+/* ---------- Content ---------- */
+var CONTACT = {
+  email: "karanpatelct@gmail.com",
+  phone: "416-871-5962",
+  phoneHref: "tel:+14168715962",
+  linkedinHref: "https://linkedin.com/in/karan-patel-0b108b175"
+};
+
+var FACTS = [
+  { k: "Based in", v: "Toronto, Ontario. Canadian citizen." },
+  { k: "Looking for", v: "Java full stack roles, hybrid or remote" },
+  { k: "Focus", v: "Licensing and entitlement systems, telecom software, applied AI" },
+  { k: "Core stack", v: "Java, Spring Boot, React, MySQL, PostgreSQL" }
+];
+
+var JOBS = [
+  {
+    date: "Oct 2025 to present",
+    title: "Independent development, applied machine learning",
+    org: "Toronto, Ontario",
+    points: [
+      "Self-directed work on large language models, agentic workflows, and integrating AI into business applications.",
+      "Designed and built ShopFloor IQ, a retrieval-augmented generation product demo for manufacturers."
+    ]
+  },
+  {
+    date: "Mar 2021 to Oct 2025",
+    title: "Full Stack Developer",
+    org: "Aviat Networks (formerly Redline Communications)",
+    points: [
+      "Co-designed the company-wide Entitlement and License Management Platform with the software architect, replacing a legacy .NET tool.",
+      "Built the entire React front end, including a drag-and-drop builder for defining license keys.",
+      "Contributed to the Java (Eclipse Jersey) backend, key generation logic, and role-based access with NTLM single sign-on and JWT.",
+      "Built C#/.NET middleware for Microsoft Dynamics 365 CRM and migrated legacy SQL Server data to MySQL with no disruption to users.",
+      "From 2024, owned the radios' C++ OAM software: configuration, fault management, and firmware upgrades through NETCONF and YANG."
+    ]
+  },
+  {
+    date: "Jan 2020 to Mar 2021",
+    title: "Software Developer",
+    org: "ERP Buddies",
+    points: [
+      "Built client-facing business applications in ASP.NET MVC, JavaScript, and SQL Server, with .NET middleware connecting them to NetSuite.",
+      "Diagnosed and resolved user-reported issues in a C#/.NET Framework customer information system."
+    ]
+  },
+  {
+    date: "Aug 2018 to Jan 2020",
+    title: "Diploma in Computer Programming",
+    org: "Conestoga College, Waterloo, Ontario",
+    points: []
+  }
+];
+
+var SKILLS = [
+  { k: "Backend", v: "Java, Spring Boot, Eclipse Jersey (JAX-RS), JDBC, REST APIs, C#, ASP.NET Core and MVC" },
+  { k: "Frontend", v: "React, Redux, React Router, JavaScript (ES6+), TypeScript, Tailwind CSS, Chakra UI" },
+  { k: "Data", v: "MySQL, PostgreSQL with pgvector, Microsoft SQL Server, Entity Framework, ETL and data migration" },
+  { k: "Security", v: "Role-based access control, JWT, NTLM single sign-on, AES encryption, digital signatures, SSL/TLS" },
+  { k: "AI", v: "LLMs, retrieval-augmented generation, agentic workflows, Voyage AI embeddings, Google Gemini" },
+  { k: "Telecom", v: "C++, NETCONF, YANG data models, SNMP" },
+  { k: "Delivery", v: "Jenkins, GitHub Actions, Docker, Apache Tomcat, Linux, JUnit, React Testing Library, Git, Agile" }
+];
+
+/* ---------- Hooks ---------- */
+function useInView(ref, threshold) {
+  var st = React.useState(REDUCED), inView = st[0], setInView = st[1];
+  React.useEffect(function () {
+    if (REDUCED) return;
+    var el = ref.current;
+    if (!el) return;
+    if (!("IntersectionObserver" in window)) { setInView(true); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { setInView(true); io.disconnect(); } });
+    }, { threshold: threshold || 0.15, rootMargin: "0px 0px -8% 0px" });
+    io.observe(el);
+    return function () { io.disconnect(); };
+  }, []);
+  return inView;
+}
+
+function Reveal(props) {
+  var ref = React.useRef(null);
+  var inView = useInView(ref, 0.12);
+  var cls = "reveal" + (inView ? " in" : "") + (props.className ? " " + props.className : "");
+  var style = props.delay ? { transitionDelay: props.delay + "ms" } : undefined;
+  return h(props.as || "div", { ref: ref, className: cls, style: style }, props.children);
+}
+
+function CountUp(props) {
+  var ref = React.useRef(null);
+  var inView = useInView(ref, 0.6);
+  var st = React.useState(REDUCED ? props.to : 0), val = st[0], setVal = st[1];
+  React.useEffect(function () {
+    if (!inView || REDUCED) return;
+    var start = null, dur = props.dur || 1400, raf = 0;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min(1, (ts - start) / dur);
+      setVal(Math.round((1 - Math.pow(1 - p, 3)) * props.to));
+      if (p < 1) raf = requestAnimationFrame(step);
+    }
+    raf = requestAnimationFrame(step);
+    return function () { cancelAnimationFrame(raf); };
+  }, [inView]);
+  return h("span", { ref: ref, className: "num" }, val);
+}
+
+/* ---------- Theme toggle ---------- */
+function prefersDark() { return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches); }
+function ThemeToggle() {
+  var saved = "system";
+  try { saved = window.localStorage.getItem("kp-theme") || "system"; } catch (e) {}
+  var st = React.useState(saved), theme = st[0], setTheme = st[1];
+  React.useEffect(function () {
+    var root = document.documentElement;
+    if (theme === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", theme);
+    try { window.localStorage.setItem("kp-theme", theme); } catch (e) {}
+  }, [theme]);
+  var isDark = theme === "dark" || (theme === "system" && prefersDark());
+  return h("button", {
+    className: "icon-btn", type: "button",
+    onClick: function () { setTheme(isDark ? "light" : "dark"); },
+    "aria-label": isDark ? "Switch to light theme" : "Switch to dark theme"
+  }, isDark ? h(SunIcon, { size: 17 }) : h(MoonIcon, { size: 17 }));
+}
+
+/* ---------- Nav ---------- */
+function Nav(props) {
+  return h("nav", { className: "nav" + (props.onHero ? " on-hero" : ""), "aria-label": "Main" },
+    h("div", { className: "container nav-inner" },
+      h("a", { className: "brand", href: "#top" }, "Karan Patel"),
+      h("div", { className: "nav-links" },
+        h("a", { href: "#work" }, "Work"),
+        h("a", { className: "opt", href: "#experience" }, "Experience"),
+        h("a", { className: "opt", href: "#skills" }, "Skills"),
+        h("a", { href: "#contact" }, "Contact"),
+        h(ThemeToggle, null)
+      )
+    ),
+    h("div", { className: "progress", "aria-hidden": "true" })
+  );
+}
+
+/* ---------- Hero: interactive radio-wave field ---------- */
+function WaveField() {
+  var ref = React.useRef(null);
+  React.useEffect(function () {
+    var canvas = ref.current;
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var host = canvas.parentNode;
+    var w = 0, ht = 0, raf = 0, running = false, t = 0, last = 0;
+    var mouse = { x: -9999, active: 0, target: 0 };
+    var waves = [
+      { y: 0.80, amp: 26, freq: 0.0085, speed: 0.55, phase: 0.0, width: 1.6, color: "rgba(120, 160, 255, 0.55)" },
+      { y: 0.84, amp: 18, freq: 0.0125, speed: -0.42, phase: 1.3, width: 1.2, color: "rgba(120, 160, 255, 0.30)" },
+      { y: 0.87, amp: 32, freq: 0.0062, speed: 0.34, phase: 2.1, width: 2.0, color: "rgba(242, 154, 38, 0.80)" },
+      { y: 0.91, amp: 14, freq: 0.0180, speed: 0.85, phase: 0.7, width: 1.0, color: "rgba(180, 205, 255, 0.24)" },
+      { y: 0.95, amp: 22, freq: 0.0092, speed: -0.28, phase: 2.8, width: 1.0, color: "rgba(120, 160, 255, 0.22)" }
+    ];
+    function draw() {
+      ctx.clearRect(0, 0, w, ht);
+      mouse.active += (mouse.target - mouse.active) * 0.06;
+      for (var i = 0; i < waves.length; i++) {
+        var wv = waves[i], base = ht * wv.y;
+        ctx.beginPath();
+        ctx.lineWidth = wv.width;
+        ctx.strokeStyle = wv.color;
+        for (var x = 0; x <= w + 6; x += 6) {
+          var env = 0.3 + 0.7 * Math.sin(Math.PI * Math.min(1, Math.max(0, x / w)));
+          var dx = x - mouse.x;
+          var boost = 1 + 1.5 * mouse.active * Math.exp(-(dx * dx) / (2 * 150 * 150));
+          var y = base
+            + wv.amp * env * boost * Math.sin(x * wv.freq + t * wv.speed + wv.phase)
+            + wv.amp * 0.3 * env * Math.sin(x * wv.freq * 2.3 - t * wv.speed * 1.3);
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+    function resize() {
+      var r = host.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = r.width; ht = r.height;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(ht * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+    function frame(ts) {
+      if (!running) return;
+      if (!last) last = ts;
+      t += Math.min(50, ts - last) / 1000;
+      last = ts;
+      draw();
+      raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running || REDUCED) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; cancelAnimationFrame(raf); }
+    function onMove(e) { var r = host.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.target = 1; }
+    function onLeave() { mouse.target = 0; }
+    function inViewport() { var r = host.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; }
+    function onVis() { if (document.hidden) stop(); else if (inViewport()) start(); }
+
+    resize();
+    window.addEventListener("resize", resize);
+    host.addEventListener("pointermove", onMove);
+    host.addEventListener("pointerleave", onLeave);
+    document.addEventListener("visibilitychange", onVis);
+    var io = null;
+    if ("IntersectionObserver" in window) {
+      io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); });
+      io.observe(host);
+    } else { start(); }
+    return function () {
+      stop();
+      window.removeEventListener("resize", resize);
+      host.removeEventListener("pointermove", onMove);
+      host.removeEventListener("pointerleave", onLeave);
+      document.removeEventListener("visibilitychange", onVis);
+      if (io) io.disconnect();
+    };
+  }, []);
+  return h("canvas", { ref: ref, className: "waves", "aria-hidden": "true" });
+}
+
+function AnimatedName(props) {
+  var i = 0;
+  var words = props.text.split(" ");
+  var kids = [];
+  words.forEach(function (word, wi) {
+    if (wi > 0) kids.push(" ");
+    kids.push(h("span", { className: "word", key: "w" + wi, "aria-hidden": "true" },
+      word.split("").map(function (c) {
+        var delay = 120 + (i++) * 42;
+        return h("span", { className: "ch", key: i, style: { animationDelay: delay + "ms" } }, c);
+      })
+    ));
+  });
+  return h("h1", { className: "display hero-name", "aria-label": props.text }, kids);
+}
+
+function Hero() {
+  function onPanelMove(e) {
+    var el = e.currentTarget, r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+    el.style.setProperty("--my", (e.clientY - r.top) + "px");
+  }
+  return h("header", { className: "hero", id: "top" },
+    h(WaveField, null),
+    h("div", { className: "container hero-grid" },
+      h("div", null,
+        h(AnimatedName, { text: "Karan Patel" }),
+        h("p", { className: "hero-role hero-in d1" }, "Full stack developer, Java and React"),
+        h("p", { className: "hero-summary hero-in d2" },
+          "Five years building enterprise web applications. I co-designed the licensing platform behind Aviat Networks\u2019 software-defined radios, and I now apply large language models to manufacturing workflows."
+        ),
+        h("div", { className: "actions hero-in d3" },
+          h("a", { className: "btn btn-energy", href: "mailto:" + CONTACT.email }, h(MailIcon, { size: 17 }), "Email me"),
+          h("a", { className: "btn btn-ghost", href: CONTACT.linkedinHref, target: "_blank", rel: "noopener noreferrer" }, h(LinkIcon, { size: 17 }), "LinkedIn profile")
+        )
+      ),
+      h("aside", { className: "panel hero-in d4", "aria-label": "At a glance", onPointerMove: onPanelMove },
+        h("div", { className: "status" }, h("span", { className: "status-dot" }), "Available for new roles"),
+        h("dl", { className: "facts" },
+          FACTS.map(function (f, idx) { return h("div", { key: idx }, h("dt", null, f.k), h("dd", null, f.v)); })
+        )
+      )
+    )
+  );
+}
+
+/* ---------- Figure 1: license key flow with moving packets ---------- */
+function KeyFlowFigure() {
+  var ref = React.useRef(null);
+  var inView = useInView(ref, 0.45);
+  var st = React.useState(false), flowing = st[0], setFlowing = st[1];
+  React.useEffect(function () {
+    if (!inView || REDUCED) return;
+    var id = setTimeout(function () { setFlowing(true); }, 1700);
+    return function () { clearTimeout(id); };
+  }, [inView]);
+
+  function node(x, y, w, ht, title, sub, isKey) {
+    return h("g", null,
+      h("rect", { className: "fx-box" + (isKey ? " key" : ""), x: x, y: y, width: w, height: ht, rx: 9 }),
+      h("text", { className: "fx-title", x: x + w / 2, y: y + 27, textAnchor: "middle" }, title),
+      h("text", { className: "fx-sub", x: x + w / 2, y: y + 46, textAnchor: "middle" }, sub)
+    );
+  }
+  function packet(pathId, dur, key) {
+    return h("g", { key: key },
+      h("circle", { className: "fx-halo", r: 9 },
+        h("animateMotion", { dur: dur, repeatCount: "indefinite" }, h("mpath", { xlinkHref: "#" + pathId }))),
+      h("circle", { className: "fx-packet", r: 4 },
+        h("animateMotion", { dur: dur, repeatCount: "indefinite" }, h("mpath", { xlinkHref: "#" + pathId })))
+    );
+  }
+
+  var cls = "figure" + (REDUCED ? "" : " will-draw") + (inView ? " drawn" : "") + (flowing ? " flowing" : "");
+  return h("figure", { className: cls, ref: ref },
+    h("div", { className: "figure-canvas" },
+      h("svg", { className: "fx", viewBox: "0 0 400 336", role: "img",
+        "aria-label": "Diagram: the radio's serial number and MAC address, plus a feature definition, go into the key generator, which produces a license key that is valid on one radio." },
+        h("defs", null,
+          h("marker", { id: "kp-arrow", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto" },
+            h("path", { className: "fx-arrow", d: "M0 0 L10 5 L0 10 z" }))
+        ),
+        h("path", { id: "kp-p1", className: "fx-path p1", pathLength: 1, d: "M98 70 V104 H176 V137", markerEnd: "url(#kp-arrow)" }),
+        h("path", { id: "kp-p2", className: "fx-path p2", pathLength: 1, d: "M302 70 V104 H224 V137", markerEnd: "url(#kp-arrow)" }),
+        h("path", { id: "kp-p3", className: "fx-path p3", pathLength: 1, d: "M200 202 V265", markerEnd: "url(#kp-arrow)" }),
+        flowing ? [packet("kp-p1", "2.2s", "a"), packet("kp-p2", "2.7s", "b"), packet("kp-p3", "1.5s", "c")] : null,
+        node(6, 8, 184, 62, "Radio identity", "Serial number + MAC"),
+        node(210, 8, 184, 62, "Feature definition", "From the key builder"),
+        node(95, 140, 210, 62, "Key generator", "AES encryption + signature", true),
+        node(115, 268, 170, 62, "License key", "Valid on one radio")
+      )
+    ),
+    h("figcaption", null, "How a feature key is issued: each key is bound to one radio\u2019s serial number and MAC address, then encrypted and signed.")
+  );
+}
+
+/* ---------- Figure 2: ShopFloor IQ exchange that plays out live ---------- */
+function QaFigure() {
+  var ref = React.useRef(null);
+  var inView = useInView(ref, 0.4);
+  var st = React.useState(REDUCED ? 6 : 0), step = st[0], setStep = st[1];
+  var rt = React.useState(0), run = rt[0], setRun = rt[1];
+  React.useEffect(function () {
+    if (!inView || REDUCED) return;
+    setStep(0);
+    var times = [250, 900, 2300, 3300, 3950, 5400];
+    var ids = times.map(function (ms, i) { return setTimeout(function () { setStep(i + 1); }, ms); });
+    return function () { ids.forEach(clearTimeout); };
+  }, [inView, run]);
+
+  function typing(key) {
+    return h("div", { key: key, className: "bubble a typing", "aria-label": "Assistant is typing" }, h("span"), h("span"), h("span"));
+  }
+  var kids = [];
+  if (step >= 1) kids.push(h("div", { key: "q1", className: "bubble q" }, "What torque should the M8 bolts on the conveyor guard be set to?"));
+  if (step === 2) kids.push(typing("t1"));
+  if (step >= 3) kids.push(h("div", { key: "a1", className: "bubble a" },
+    "Tighten them to 25 N\u00B7m in a cross pattern, then recheck after the first shift.",
+    h("div", { className: "source" }, h(DocIcon, { size: 14 }), "Conveyor maintenance SOP, page 14")));
+  if (step >= 4) kids.push(h("div", { key: "q2", className: "bubble q" }, "Who approved the last change to this procedure?"));
+  if (step === 5) kids.push(typing("t2"));
+  if (step >= 6) kids.push(h("div", { key: "a2", className: "bubble a unknown" },
+    "I can\u2019t find that in this plant\u2019s documents, so I won\u2019t guess.",
+    h("div", { className: "gap-note" }, "Added to the documentation gap report.")));
+
+  return h("figure", { className: "figure", ref: ref },
+    h("div", { className: "figure-canvas qa" }, kids),
+    h("figcaption", null,
+      h("span", null, "Illustrative example with sample content, not real plant data."),
+      (!REDUCED && step >= 6) ? h("button", { className: "link-btn", type: "button", onClick: function () { setRun(run + 1); } }, "Replay example") : null
+    )
+  );
+}
+
+/* ---------- Case studies ---------- */
+function strongPart(o) {
+  var parts = [];
+  if (o.pre) parts.push(o.pre);
+  if (o.count != null) parts.push(h(CountUp, { key: "c", to: o.count }));
+  parts.push(o.strong);
+  return parts;
+}
+
+function CaseStudy(props) {
+  return h("article", { className: "case" },
+    h(Reveal, null,
+      h("h3", { className: "display case-title" }, props.title),
+      h("p", { className: "case-meta" }, props.meta),
+      h("p", { className: "case-lead" }, props.lead),
+      h("ul", { className: "outcomes" },
+        props.outcomes.map(function (o, i) { return h("li", { key: i }, h("strong", null, strongPart(o)), " ", o.rest); })
+      ),
+      props.role ? h("p", { className: "role-note" }, h("b", null, "My role. "), props.role) : null,
+      h("p", { className: "built-with" }, h("b", null, "Built with "), props.stack)
+    ),
+    h(Reveal, { delay: 150 }, props.figure)
+  );
+}
+
+function SectionHead(props) {
+  return h(Reveal, null,
+    h("h2", { className: "display section-title" }, props.title),
+    h("div", { className: "title-bar", "aria-hidden": "true" }),
+    props.intro ? h("p", { className: "section-intro" }, props.intro) : null
+  );
+}
+
+function Work() {
+  return h("section", { className: "section", id: "work" },
+    h("div", { className: "container" },
+      h(SectionHead, { title: "Selected work", intro: "Two systems I designed and built end to end, followed by earlier personal projects." }),
+      h(CaseStudy, {
+        title: "Entitlement and License Management Platform",
+        meta: "Aviat Networks, 2021 to 2025",
+        lead: "Aviat\u2019s software-defined radios unlock features through license keys. The legacy .NET tool couldn\u2019t license newer radio models, so I co-designed its replacement with the software architect and built it into the system every department relied on.",
+        outcomes: [
+          { strong: "Under a minute", rest: "to generate keys for newer radios, which the old tool couldn\u2019t license at all" },
+          { count: 10, strong: "+ radio models", rest: "and 50+ feature modules defined in the platform" },
+          { count: 100, strong: "+ keys a month,", rest: "each AES-encrypted, digitally signed, and bound to a single radio" },
+          { strong: "Seven user groups", rest: "served, from R&D and QA to Manufacturing, Sales, vendors, and Admin" }
+        ],
+        role: "Sole front-end developer. I also wrote backend endpoints, key generation logic, and role-based access combining NTLM single sign-on with JWT, and I set up the Tomcat, SSL, and MySQL environments.",
+        stack: "Java, Eclipse Jersey, JDBC, MySQL, React, Redux, Tailwind CSS, Chakra UI, Tomcat on Linux, Jenkins",
+        figure: h(KeyFlowFigure, null)
+      }),
+      h(CaseStudy, {
+        title: "ShopFloor IQ",
+        meta: "Independent project, 2025 to present. Working demo.",
+        lead: "A question-answering assistant for manufacturers. It answers shop-floor questions from a plant\u2019s own procedures and manuals, cites the exact page, and says so when the documents don\u2019t contain the answer.",
+        outcomes: [
+          { pre: "Under ", count: 30, strong: " seconds", rest: "to return a cited answer from 100+ pages of procedures" },
+          { strong: "Refuses to guess", rest: "when the documentation doesn\u2019t cover the question" },
+          { strong: "Gap report", rest: "that ranks unanswered questions so plants know what to document next" },
+          { strong: "Isolated data", rest: "for each plant, hosted in Canada" }
+        ],
+        stack: "Spring Boot, React, Voyage AI embeddings, PostgreSQL with pgvector, Google Gemini, Docker",
+        figure: h(QaFigure, null)
+      }),
+      h("div", { className: "others" },
+        h("h3", { className: "display others-title" }, "Earlier projects"),
+        h(Reveal, { className: "other" },
+          h("h4", null, "JWLBPM"),
+          h("p", { className: "case-meta" }, "Business process management platform. Java, Eclipse Jersey."),
+          h("p", { className: "body" }, "Supports on-premises and cloud installs, with a flowchart-based workflow editor, real-time process oversight, external data integrations, and role-based admin controls.")
+        ),
+        h(Reveal, { className: "other", delay: 120 },
+          h("h4", null, "YLDB"),
+          h("p", { className: "case-meta" }, "Database framework. Java."),
+          h("p", { className: "body" }, "Generates ANSI-compliant SQL through query-builder components, with configurable connection pooling and email integration for multi-tenant systems.")
+        )
+      )
+    )
+  );
+}
+
+function Experience() {
+  return h("section", { className: "section", id: "experience" },
+    h("div", { className: "container" },
+      h(SectionHead, { title: "Experience and education" }),
+      h("div", { className: "jobs", id: "jobs" },
+        h("div", { className: "rail", "aria-hidden": "true" }, h("div", { className: "rail-fill" })),
+        JOBS.map(function (j, i) {
+          return h("div", { className: "job", key: i },
+            h("span", { className: "job-node", "aria-hidden": "true" }),
+            h(Reveal, { className: "job-inner" },
+              h("div", { className: "job-date" }, j.date),
+              h("div", null,
+                h("h3", { className: "display job-title" }, j.title),
+                h("p", { className: "job-org" }, j.org),
+                j.points.length ? h("ul", null, j.points.map(function (p, k) { return h("li", { key: k }, p); })) : null
+              )
+            )
+          );
+        })
+      )
+    )
+  );
+}
+
+function Skills() {
+  return h("section", { className: "section", id: "skills" },
+    h("div", { className: "container" },
+      h(SectionHead, { title: "Skills" }),
+      h("div", { className: "skills" },
+        SKILLS.map(function (s, i) {
+          return h(Reveal, { className: "skill-row", key: i, delay: i * 70 },
+            h("div", { className: "skill-label" }, s.k),
+            h("div", { className: "skill-items" }, s.v)
+          );
+        })
+      )
+    )
+  );
+}
+
+function Contact() {
+  return h("section", { className: "contact", id: "contact" },
+    h("div", { className: "container contact-grid" },
+      h(Reveal, null,
+        h("h2", { className: "display" }, "Let\u2019s talk."),
+        h("p", { className: "contact-lead" }, "Hiring for a Java or full stack role, especially in telecom, licensing, or applied AI? I\u2019d be glad to hear about your team."),
+        h("div", { className: "actions" },
+          h("a", { className: "btn btn-energy", href: "mailto:" + CONTACT.email }, h(MailIcon, { size: 17 }), "Email me")
+        )
+      ),
+      h(Reveal, { delay: 150 },
+        h("ul", { className: "contact-list" },
+          h("li", null, h("a", { href: "mailto:" + CONTACT.email }, h(MailIcon, null), CONTACT.email, h("span", { className: "lbl" }, "Email"))),
+          h("li", null, h("a", { href: CONTACT.phoneHref }, h(PhoneIcon, null), CONTACT.phone, h("span", { className: "lbl" }, "Phone"))),
+          h("li", null, h("a", { href: CONTACT.linkedinHref, target: "_blank", rel: "noopener noreferrer" }, h(LinkIcon, null), "LinkedIn", h("span", { className: "lbl" }, "Profile")))
+        )
+      )
+    )
+  );
+}
+
+function Footer() {
+  return h("footer", { className: "footer" },
+    h("div", { className: "container footer-inner" },
+      h("span", null, "\u00A9 " + new Date().getFullYear() + " Karan Patel"),
+      h("span", null, "Toronto, Ontario")
+    )
+  );
+}
+
+/* ---------- App: scroll progress, nav state, timeline rail ---------- */
+function App() {
+  var st = React.useState(true), onHero = st[0], setOnHero = st[1];
+  React.useEffect(function () {
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var root = document.documentElement;
+      var max = root.scrollHeight - window.innerHeight;
+      var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      root.style.setProperty("--progress", p.toFixed(4));
+      var hero = document.getElementById("top");
+      if (hero) setOnHero(hero.getBoundingClientRect().bottom > 72);
+      var jobs = document.getElementById("jobs");
+      if (jobs) {
+        var r = jobs.getBoundingClientRect();
+        var rp = REDUCED ? 1 : Math.min(1, Math.max(0, (window.innerHeight * 0.62 - r.top) / r.height));
+        jobs.style.setProperty("--rail", rp.toFixed(4));
+        var nodes = jobs.querySelectorAll(".job-node");
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i];
+          var top = n.parentNode.offsetTop + n.offsetTop + 6;
+          n.classList.toggle("lit", REDUCED || top <= rp * r.height + 1);
+        }
+      }
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return function () { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, []);
+
+  return h(React.Fragment, null,
+    h(Nav, { onHero: onHero }),
+    h("main", null, h(Hero, null), h(Work, null), h(Experience, null), h(Skills, null), h(Contact, null)),
+    h(Footer, null)
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App, null));
+</script>
+</body>
+</html>
