@@ -144,7 +144,18 @@
       radial-gradient(800px 460px at 8% 115%, rgba(242, 154, 38, 0.18), transparent 60%),
       linear-gradient(160deg, var(--hero-a), var(--hero-b));
   }
-  .hero { padding: 156px 0 180px; }
+  .hero { --map-h: 300px; padding: 156px 0 calc(var(--map-h) + 76px); }
+  .map-head { position: absolute; left: 0; right: 0; bottom: calc(var(--map-h) + 14px); z-index: 1; pointer-events: none; }
+  .map-head .container { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .map-title { font-size: 0.9rem; color: var(--on-hero-soft); }
+  .map-title b { color: #FFFFFF; font-weight: 650; }
+  .hint-touch { display: none; }
+  @media (hover: none) { .hint-hover { display: none; } .hint-touch { display: inline; } }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.8rem; color: var(--on-hero-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  @media (max-width: 760px) { .legend { display: none; } }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .waves { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .hero .container, .contact .container { position: relative; z-index: 1; }
   .hero-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 56px; align-items: end; }
@@ -320,7 +331,7 @@
   @keyframes blink { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
 
   @media (max-width: 900px) {
-    .hero { padding: 120px 0 170px; }
+    .hero { padding: 120px 0 calc(var(--map-h) + 76px); }
     .hero-grid, .case, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
     .job-inner, .skill-row { grid-template-columns: 1fr; gap: 6px; }
     .job-date { padding-top: 0; }
@@ -507,71 +518,515 @@ function Nav(props) {
   );
 }
 
-/* ---------- Hero: interactive radio-wave field ---------- */
-function WaveField() {
+/* ---------- Hero: live map of the systems built, over radio waves ---------- */
+var MAP_H = 370;
+var COLORS = { blue: [134, 166, 255], amber: [242, 154, 38], teal: [94, 220, 200], red: [255, 112, 112], violet: [178, 152, 255], neutral: [205, 216, 242] };
+var GROUP_COLOR = { ext: "neutral", users: "neutral", platform: "blue", security: "amber", telecom: "teal", ai: "violet" };
+function rgba(c, a) { return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")"; }
+var AV = "Aviat Networks, 2021 to 2025", EB = "ERP Buddies, 2020 to 2021", IN = "Independent project, 2025 to present", OA = "Aviat Networks, 2024 to 2025";
+
+var MAP_NODES = [
+  /* departments using the platform (x positions are laid out automatically) */
+  { id: "u-rnd", chip: true, x: 0, y: 50, label: "R&D", group: "users", meta: AV, desc: "Defined new feature modules and key types in the platform." },
+  { id: "u-qa", chip: true, x: 0, y: 50, label: "QA", group: "users", meta: AV, desc: "Tested new keys and feature sets before release." },
+  { id: "u-mfg", chip: true, x: 0, y: 50, label: "Manufacturing", group: "users", meta: AV, desc: "Generated test keys. The Manufacturing Engineer role was limited to exactly that." },
+  { id: "u-cal", chip: true, x: 0, y: 50, label: "Calibration", group: "users", meta: AV, desc: "Installed license keys on radios during calibration." },
+  { id: "u-sales", chip: true, x: 0, y: 50, label: "Sales", group: "users", meta: AV, desc: "Sold feature upgrades to customers as license keys." },
+  { id: "u-vendors", chip: true, x: 0, y: 50, label: "Vendors", group: "users", meta: AV, desc: "Configured and generated their own encrypted keys on demand." },
+  { id: "u-admin", chip: true, x: 0, y: 50, label: "Admin", group: "users", meta: AV, desc: "Managed every user and permission across the whole platform." },
+
+  /* integrations and earlier work */
+  { id: "aspnet", x: 90, y: 50, label: "ASP.NET MVC apps", group: "platform", meta: EB, desc: "Client-facing business applications in C#, JavaScript, and SQL Server, plus legacy VB.NET modules." },
+  { id: "netsuite", x: 90, y: 140, label: "NetSuite ERP", group: "ext", meta: EB, desc: "Connected to the client applications through .NET integration middleware." },
+  { id: "dynamics", x: 90, y: 230, label: "Dynamics 365 CRM", group: "ext", meta: AV, desc: "Customer records searchable inside the Entitlement Platform, with no manual re-entry." },
+  { id: "sqlserver", x: 90, y: 320, label: "SQL Server (legacy)", group: "ext", meta: AV, desc: "The old tool\u2019s database, kept running until the migration was complete." },
+  { id: "net", x: 255, y: 185, label: ".NET middleware", group: "platform", meta: "2020 to 2025", desc: "C# SOAP middleware for Dynamics 365 at Aviat, and .NET integrations to NetSuite at ERP Buddies." },
+  { id: "legacy", x: 255, y: 272, label: "Legacy .NET tool", group: "platform", meta: AV, desc: "Maintained for users in parallel with the new platform until it was fully replaced, with no interruption." },
+
+  /* entitlement platform */
+  { id: "ui", x: 410, y: 140, label: "React + Redux UI", group: "platform", meta: AV, desc: "The entire front end, built solo: protected routes, custom hooks, validated forms, filterable tables." },
+  { id: "builder", x: 600, y: 140, label: "Key-definition builder", sub: "Drag and drop, 4 field types", group: "platform", hub: true, meta: AV, desc: "The platform\u2019s most complex feature: ordered fields that are numeric, text, multiple choice, or binary flags." },
+  { id: "modules", x: 790, y: 140, label: "Feature modules", sub: "50+ defined", group: "security", hub: true, meta: AV, desc: "Every unlockable radio feature, defined by R&D, QA, and Sales in the key builder." },
+  { id: "auth", x: 410, y: 230, label: "NTLM SSO + JWT", group: "security", meta: AV, desc: "Windows single sign-on on the corporate network, then JWT-secured API sessions and fine-grained roles." },
+  { id: "hub", x: 600, y: 230, label: "Entitlement Platform", sub: "Java, Jersey, Tomcat on Linux", group: "platform", hub: true, meta: AV, desc: "Co-designed with the software architect. Replaced a legacy tool that couldn\u2019t license newer radios." },
+  { id: "keygen", x: 790, y: 230, label: "Key generator", sub: "AES + signature", group: "security", hub: true, meta: AV, desc: "Every key encrypted, digitally signed, and bound to one radio\u2019s serial number and MAC address." },
+  { id: "key", x: 940, y: 230, label: "License key", sub: "Under a minute", group: "security", hub: true, meta: AV, desc: "100+ keys a month for 10+ radio models, each generated in under a minute." },
+  { id: "etl", x: 410, y: 320, label: "C# ETL", group: "platform", meta: AV, desc: "Migrated the legacy SQL Server data into MySQL with no disruption to users." },
+  { id: "mysql", x: 600, y: 320, label: "MySQL", group: "platform", meta: AV, desc: "The platform\u2019s datastore, which I set up and ran: test and production environments, backups, access control." },
+  { id: "jenkins", x: 790, y: 320, label: "Jenkins CI/CD", group: "platform", meta: AV, desc: "Build and deploy pipeline, set up with the build engineers. Code in Git on a self-hosted Gitea server." },
+
+  /* radios and OAM */
+  { id: "r1", x: 1075, y: 112, label: "SDR radio", group: "telecom", radio: true, meta: AV, desc: "Software-defined radios unlock their features from a license key." },
+  { id: "r2", x: 1110, y: 230, label: "SDR radio", group: "telecom", radio: true, meta: AV, desc: "10+ radio models licensed through the platform." },
+  { id: "r3", x: 1075, y: 326, label: "SDR radio", group: "telecom", radio: true, meta: AV, desc: "Each key is valid on one radio only." },
+  { id: "firmware", x: 1262, y: 120, label: "Firmware upgrades", sub: "Backups and rollbacks", group: "telecom", hub: true, meta: OA, desc: "Firmware upgrades for the radios, with configuration backups and rollbacks." },
+  { id: "oam", x: 1262, y: 230, label: "OAM software (C++)", sub: "NETCONF, YANG, SNMP", group: "telecom", hub: true, meta: OA, desc: "Took ownership in 2024: configuration, fault management, and a web interface for operators." },
+  { id: "bands", x: 1262, y: 335, label: "Frequency bands", sub: "3+ added", group: "telecom", hub: true, meta: OA, desc: "3+ new frequency band configurations added for customers, alongside bandwidth, transmit power, and IP settings." },
+
+  /* ShopFloor IQ */
+  { id: "docs", x: 1445, y: 50, label: "Plant manuals", group: "ai", meta: IN, desc: "100+ pages of procedures and manuals, cited down to the page." },
+  { id: "sfiq", x: 1445, y: 185, label: "ShopFloor IQ", sub: "Spring Boot, React, Docker", group: "ai", hub: true, meta: IN, desc: "Retrieval-augmented assistant for manufacturers. Working demo, deployable standalone or in the cloud." },
+  { id: "gap", x: 1445, y: 320, label: "Gap report", group: "ai", meta: IN, desc: "Ranks the questions the documents couldn\u2019t answer, so plants know what to write next." },
+  { id: "voyage", x: 1610, y: 50, label: "Voyage AI", group: "ai", meta: IN, desc: "Embeds each passage so the right text can be retrieved." },
+  { id: "pgv", x: 1610, y: 140, label: "pgvector", group: "ai", meta: IN, desc: "PostgreSQL vector search, with each plant\u2019s data isolated and hosted in Canada." },
+  { id: "gemini", x: 1610, y: 230, label: "Gemini", group: "ai", meta: IN, desc: "Writes the answer only from the retrieved passages." },
+  { id: "answer", x: 1610, y: 320, label: "Cited answer", group: "ai", meta: IN, desc: "Under 30 seconds, with the page cited, or an honest \u201cI don\u2019t know.\u201d" }
+];
+var MAP_EDGES = [
+  { a: "aspnet", b: "net", c: "blue", r: 0.28 },
+  { a: "netsuite", b: "net", c: "blue", r: 0.3, bi: true },
+  { a: "dynamics", b: "net", c: "blue", r: 0.55 },
+  { a: "net", b: "hub", c: "blue", r: 0.6 },
+  { a: "sqlserver", b: "legacy", c: "neutral", r: 0.3, bi: true },
+  { a: "sqlserver", b: "etl", c: "neutral", r: 0.35 },
+  { a: "etl", b: "mysql", c: "neutral", r: 0.35 },
+  { a: "u-rnd", b: "ui", c: "neutral", r: 0.14 },
+  { a: "u-qa", b: "ui", c: "neutral", r: 0.14 },
+  { a: "u-mfg", b: "ui", c: "neutral", r: 0.14 },
+  { a: "u-cal", b: "ui", c: "neutral", r: 0.14 },
+  { a: "u-sales", b: "ui", c: "neutral", r: 0.14 },
+  { a: "u-vendors", b: "ui", c: "neutral", r: 0.14 },
+  { a: "u-admin", b: "ui", c: "neutral", r: 0.14 },
+  { a: "ui", b: "hub", c: "blue", r: 0.8, bi: true },
+  { a: "ui", b: "builder", c: "blue", r: 0.4 },
+  { a: "builder", b: "modules", c: "blue", r: 0.4 },
+  { a: "modules", b: "keygen", c: "amber", r: 0.45 },
+  { a: "auth", b: "hub", c: "amber", r: 0.45 },
+  { a: "hub", b: "mysql", c: "blue", r: 0.7, bi: true },
+  { a: "jenkins", b: "hub", c: "blue", r: 0.22 },
+  { a: "hub", b: "keygen", c: "amber", r: 0.6 },
+  { a: "keygen", b: "key", c: "amber", r: 0.7 },
+  { a: "key", b: "r1", c: "amber", r: 0.28, burst: true, bend: -10 },
+  { a: "key", b: "r2", c: "amber", r: 0.28, burst: true },
+  { a: "key", b: "r3", c: "amber", r: 0.28, burst: true, bend: 10 },
+  { a: "oam", b: "r1", c: "teal", r: 0.26, bend: 14, label: "NETCONF / YANG", lx: 1152, ly: 170 },
+  { a: "oam", b: "r2", c: "teal", r: 0.26, bend: 16 },
+  { a: "oam", b: "r3", c: "teal", r: 0.26, bend: -14 },
+  { a: "r1", b: "oam", c: "red", r: 0.09, bend: 14 },
+  { a: "r2", b: "oam", c: "red", r: 0.09, bend: 16 },
+  { a: "r3", b: "oam", c: "red", r: 0.09, bend: -14, label: "SNMP traps", lx: 1160, ly: 292 },
+  { a: "firmware", b: "oam", c: "teal", r: 0.3 },
+  { a: "bands", b: "oam", c: "teal", r: 0.22 },
+  { a: "docs", b: "voyage", c: "violet", r: 0.5 },
+  { a: "voyage", b: "pgv", c: "violet", r: 0.5 },
+  { a: "sfiq", b: "pgv", c: "violet", r: 0.55, bi: true },
+  { a: "pgv", b: "gemini", c: "violet", r: 0.5 },
+  { a: "gemini", b: "answer", c: "violet", r: 0.5 },
+  { a: "answer", b: "sfiq", c: "violet", r: 0.35 },
+  { a: "answer", b: "gap", c: "violet", r: 0.2 }
+];
+var TOUR = ["dynamics", "net", "hub", "ui", "builder", "modules", "keygen", "key", "r2", "oam", "firmware", "bands",
+  "auth", "u-admin", "u-mfg", "u-vendors", "mysql", "legacy", "etl", "jenkins", "sfiq", "docs", "pgv", "gemini", "answer", "gap", "aspnet", "netsuite"];
+var FONT = "\"Instrument Sans\", \"Helvetica Neue\", Arial, sans-serif";
+
+function HeroScene() {
   var ref = React.useRef(null);
   React.useEffect(function () {
     var canvas = ref.current;
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext("2d");
     var host = canvas.parentNode;
-    var w = 0, ht = 0, raf = 0, running = false, t = 0, last = 0;
+    var viewW = 0, viewH = 0, dpr = 1, s = 1, mapH = 0, mapTop = 0, fit = true, camX = 0, minX = 0, maxX = 1700, PAD = 22;
+    var raf = 0, running = false, t = 0, last = 0, clock = 0;
     var mouse = { x: -9999, active: 0, target: 0 };
+    var hovered = null, selected = null, selectedAt = -1e9, lastPointer = -1e9, tourIdx = 0, tourAt = 0;
+    var packets = [], rings = [];
+
+    var nodes = MAP_NODES.map(function (n) { return Object.assign({ w: 0, h: 0, pulse: 0, ringT: Math.random() * 2.6 }, n); });
+    var byId = {};
+    nodes.forEach(function (n) { byId[n.id] = n; });
+    var edges = MAP_EDGES.map(function (e) {
+      return Object.assign({ A: byId[e.a], B: byId[e.b], cx: 0, cy: 0, len: 1, acc: Math.random(), flip: false }, e);
+    });
+    function geometry() {
+      edges.forEach(function (e) {
+        var a = e.A, b = e.B;
+        var dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx * dx + dy * dy) || 1;
+        var bend = e.bend || 0;
+        e.cx = (a.x + b.x) / 2 + (-dy / len) * bend;
+        e.cy = (a.y + b.y) / 2 + (dx / len) * bend;
+        e.len = len;
+      });
+    }
+    function qpt(e, u) {
+      var v = 1 - u;
+      return { x: v * v * e.A.x + 2 * v * u * e.cx + u * u * e.B.x, y: v * v * e.A.y + 2 * v * u * e.cy + u * u * e.B.y };
+    }
+
     var waves = [
-      { y: 0.80, amp: 26, freq: 0.0085, speed: 0.55, phase: 0.0, width: 1.6, color: "rgba(120, 160, 255, 0.55)" },
-      { y: 0.84, amp: 18, freq: 0.0125, speed: -0.42, phase: 1.3, width: 1.2, color: "rgba(120, 160, 255, 0.30)" },
-      { y: 0.87, amp: 32, freq: 0.0062, speed: 0.34, phase: 2.1, width: 2.0, color: "rgba(242, 154, 38, 0.80)" },
-      { y: 0.91, amp: 14, freq: 0.0180, speed: 0.85, phase: 0.7, width: 1.0, color: "rgba(180, 205, 255, 0.24)" },
-      { y: 0.95, amp: 22, freq: 0.0092, speed: -0.28, phase: 2.8, width: 1.0, color: "rgba(120, 160, 255, 0.22)" }
+      { f: 0.16, amp: 22, freq: 0.0085, speed: 0.55, phase: 0.0, width: 1.4, color: "rgba(120, 160, 255, 0.40)" },
+      { f: 0.36, amp: 16, freq: 0.0125, speed: -0.42, phase: 1.3, width: 1.1, color: "rgba(120, 160, 255, 0.22)" },
+      { f: 0.55, amp: 28, freq: 0.0062, speed: 0.34, phase: 2.1, width: 1.7, color: "rgba(242, 154, 38, 0.55)" },
+      { f: 0.74, amp: 12, freq: 0.0180, speed: 0.85, phase: 0.7, width: 1.0, color: "rgba(180, 205, 255, 0.18)" },
+      { f: 0.92, amp: 20, freq: 0.0092, speed: -0.28, phase: 2.8, width: 1.0, color: "rgba(120, 160, 255, 0.16)" }
     ];
-    function draw() {
-      ctx.clearRect(0, 0, w, ht);
-      mouse.active += (mouse.target - mouse.active) * 0.06;
+
+    function measure() {
+      nodes.forEach(function (n) {
+        if (n.radio) { n.w = 70; n.h = 60; return; }
+        if (n.chip) { ctx.font = "600 12px " + FONT; n.w = ctx.measureText(n.label).width + 28; n.h = 26; return; }
+        ctx.font = "650 13px " + FONT;
+        var lw = ctx.measureText(n.label).width;
+        var sw = 0;
+        if (n.sub) { ctx.font = "400 11px " + FONT; sw = ctx.measureText(n.sub).width; }
+        n.w = Math.max(lw, sw) + 36;
+        n.h = n.sub ? 44 : 30;
+      });
+      var cursor = 340;
+      nodes.forEach(function (n) { if (n.chip) { n.x = cursor + n.w / 2; cursor += n.w + 12; } });
+      geometry();
+      minX = Infinity; maxX = -Infinity;
+      nodes.forEach(function (n) { minX = Math.min(minX, n.x - n.w / 2); maxX = Math.max(maxX, n.x + n.w / 2); });
+      minX -= PAD; maxX += PAD;
+    }
+
+    function clampCam(x) { return Math.max(minX, Math.min(maxX - viewW / s, x)); }
+    function layout() {
+      measure();
+      var w = host.getBoundingClientRect().width;
+      var worldW = maxX - minX;
+      s = Math.max(0.78, Math.min(1, w / worldW));
+      mapH = Math.round(MAP_H * s + 24);
+      host.style.setProperty("--map-h", mapH + "px");
+      var r = host.getBoundingClientRect();
+      viewW = r.width; viewH = r.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(viewW * dpr);
+      canvas.height = Math.round(viewH * dpr);
+      mapTop = viewH - mapH + 12;
+      fit = worldW * s <= viewW + 1;
+      camX = fit ? minX - (viewW / s - worldW) / 2 : clampCam(byId.hub.x - viewW / s / 2);
+      draw();
+    }
+
+    function neighbours(act) {
+      var nb = {};
+      if (!act) return nb;
+      edges.forEach(function (e) { if (e.A === act) nb[e.B.id] = true; if (e.B === act) nb[e.A.id] = true; });
+      return nb;
+    }
+    function activeNode() {
+      if (hovered) return hovered;
+      if (selected && clock - selectedAt < 5) return selected;
+      if (!REDUCED && clock - lastPointer > 2.5) return byId[TOUR[tourIdx % TOUR.length]];
+      return REDUCED ? selected : null;
+    }
+
+    function rr(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawWaves() {
       for (var i = 0; i < waves.length; i++) {
-        var wv = waves[i], base = ht * wv.y;
+        var wv = waves[i], base = mapTop - 10 + mapH * wv.f;
         ctx.beginPath();
         ctx.lineWidth = wv.width;
         ctx.strokeStyle = wv.color;
-        for (var x = 0; x <= w + 6; x += 6) {
-          var env = 0.3 + 0.7 * Math.sin(Math.PI * Math.min(1, Math.max(0, x / w)));
+        for (var x = 0; x <= viewW + 6; x += 6) {
+          var env = 0.3 + 0.7 * Math.sin(Math.PI * Math.min(1, Math.max(0, x / viewW)));
           var dx = x - mouse.x;
           var boost = 1 + 1.5 * mouse.active * Math.exp(-(dx * dx) / (2 * 150 * 150));
-          var y = base
-            + wv.amp * env * boost * Math.sin(x * wv.freq + t * wv.speed + wv.phase)
-            + wv.amp * 0.3 * env * Math.sin(x * wv.freq * 2.3 - t * wv.speed * 1.3);
+          var y = base + s * (wv.amp * env * boost * Math.sin(x * wv.freq + t * wv.speed + wv.phase)
+            + wv.amp * 0.3 * env * Math.sin(x * wv.freq * 2.3 - t * wv.speed * 1.3));
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
       }
     }
-    function resize() {
-      var r = host.getBoundingClientRect();
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = r.width; ht = r.height;
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(ht * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw();
+
+    function drawStrip() {
+      var g = ctx.createLinearGradient(0, mapTop - 70, 0, viewH);
+      g.addColorStop(0, "rgba(3, 9, 28, 0)");
+      g.addColorStop(0.35, "rgba(3, 9, 28, 0.30)");
+      g.addColorStop(1, "rgba(3, 9, 28, 0.50)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, mapTop - 70, viewW, viewH - mapTop + 70);
     }
+
+    function drawEdges(act) {
+      ctx.lineCap = "round";
+      edges.forEach(function (e) {
+        var lit = act && (e.A === act || e.B === act);
+        var alpha = act ? (lit ? 0.85 : 0.1) : 0.3;
+        ctx.strokeStyle = rgba(COLORS[e.c], alpha);
+        ctx.lineWidth = lit ? 1.8 : 1.3;
+        ctx.beginPath();
+        ctx.moveTo(e.A.x, e.A.y);
+        ctx.quadraticCurveTo(e.cx, e.cy, e.B.x, e.B.y);
+        ctx.stroke();
+        if (e.label) {
+          ctx.font = "600 10.5px " + FONT;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillStyle = rgba(COLORS[e.c], act ? (lit ? 1 : 0.25) : 0.85);
+          ctx.fillText(e.label, e.lx, e.ly);
+        }
+      });
+    }
+
+    function drawRings() {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      rings.forEach(function (g) {
+        var a = g.a * (1 - g.r / g.max);
+        ctx.strokeStyle = rgba(g.c, Math.max(0, a));
+        ctx.lineWidth = g.burst ? 2 : 1.4;
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function drawPackets() {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      packets.forEach(function (p) {
+        var c = COLORS[p.e.c];
+        var u = p.fwd ? p.t : 1 - p.t;
+        for (var k = 3; k >= 1; k--) {
+          var tu = p.fwd ? Math.max(0, u - k * 0.025) : Math.min(1, u + k * 0.025);
+          var tp = qpt(p.e, tu);
+          ctx.fillStyle = rgba(c, 0.12 * (4 - k));
+          ctx.beginPath(); ctx.arc(tp.x, tp.y, 2.4, 0, Math.PI * 2); ctx.fill();
+        }
+        var pt = qpt(p.e, u);
+        ctx.fillStyle = rgba(c, 0.22);
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = rgba(c, 0.95);
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.7, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawNodes(act, nb) {
+      nodes.forEach(function (n) {
+        var dim = act ? ((n === act || nb[n.id]) ? 1 : 0.42) : 1;
+        var c = COLORS[GROUP_COLOR[n.group]];
+        var isAct = n === act;
+        if (n.radio) {
+          var ax = n.x, ay = n.y - 14;
+          ctx.strokeStyle = rgba(c, 0.9 * dim);
+          ctx.lineWidth = 1.6;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(ax, ay + 2); ctx.lineTo(ax - 11, n.y + 14);
+          ctx.moveTo(ax, ay + 2); ctx.lineTo(ax + 11, n.y + 14);
+          ctx.moveTo(ax - 6, n.y + 2); ctx.lineTo(ax + 6, n.y + 2);
+          ctx.moveTo(ax - 8.5, n.y + 8); ctx.lineTo(ax + 8.5, n.y + 8);
+          ctx.stroke();
+          ctx.fillStyle = rgba(c, (0.25 + 0.35 * n.pulse + (isAct ? 0.2 : 0)) * dim);
+          ctx.beginPath(); ctx.arc(ax, ay, 7 + 3 * n.pulse, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = rgba(c, dim);
+          ctx.beginPath(); ctx.arc(ax, ay, 3.4, 0, Math.PI * 2); ctx.fill();
+          ctx.font = "600 11.5px " + FONT;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillStyle = "rgba(226, 234, 255, " + (0.88 * dim) + ")";
+          ctx.fillText(n.label, ax, n.y + 30);
+          return;
+        }
+        var x = n.x - n.w / 2, y = n.y - n.h / 2;
+        if (n.chip) {
+          if (isAct || n.pulse > 0.05) { ctx.shadowColor = rgba(c, isAct ? 0.9 : 0.5 * n.pulse); ctx.shadowBlur = isAct ? 16 : 10 * n.pulse; }
+          rr(x, y, n.w, n.h, 13);
+          ctx.fillStyle = "rgba(9, 20, 54, 0.9)";
+          ctx.fill();
+          ctx.shadowBlur = 0; ctx.shadowColor = "transparent";
+          ctx.strokeStyle = rgba(c, (isAct ? 1 : 0.55) * dim);
+          ctx.lineWidth = 1.1;
+          ctx.stroke();
+          ctx.fillStyle = rgba(c, dim);
+          ctx.beginPath(); ctx.arc(x + 12, n.y, 2.8, 0, Math.PI * 2); ctx.fill();
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.font = "600 12px " + FONT;
+          ctx.fillStyle = "rgba(236, 241, 255, " + (0.92 * dim) + ")";
+          ctx.fillText(n.label, n.x + 5, n.y + 0.5);
+          return;
+        }
+        if (isAct || n.pulse > 0.05) {
+          ctx.shadowColor = rgba(c, isAct ? 0.9 : 0.6 * n.pulse);
+          ctx.shadowBlur = isAct ? 20 : 12 * n.pulse;
+        }
+        rr(x, y, n.w, n.h, 9);
+        ctx.fillStyle = "rgba(9, 20, 54, 0.9)";
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
+        ctx.strokeStyle = rgba(c, (isAct ? 1 : 0.72) * dim);
+        ctx.lineWidth = n.hub ? 1.7 : 1.2;
+        ctx.stroke();
+        ctx.fillStyle = rgba(c, dim);
+        ctx.beginPath(); ctx.arc(x + 13, n.y - (n.sub ? 7 : 0), 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "650 13px " + FONT;
+        ctx.fillStyle = "rgba(244, 247, 255, " + (0.96 * dim) + ")";
+        ctx.fillText(n.label, n.x + 6, n.sub ? n.y - 7 : n.y + 0.5);
+        if (n.sub) {
+          ctx.font = "400 11px " + FONT;
+          ctx.fillStyle = "rgba(188, 201, 234, " + (0.92 * dim) + ")";
+          ctx.fillText(n.sub, n.x + 6, n.y + 10);
+        }
+      });
+    }
+
+    function wrap(text, maxW) {
+      var words = text.split(" "), lines = [], line = "";
+      words.forEach(function (w) {
+        var test = line ? line + " " + w : w;
+        if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else { line = test; }
+      });
+      if (line) lines.push(line);
+      return lines;
+    }
+    function drawTooltip(n) {
+      var c = COLORS[GROUP_COLOR[n.group]];
+      var title = n.radio ? "Software-defined radio" : n.label;
+      var maxW = Math.min(270, viewW - 40);
+      ctx.font = "400 12.5px " + FONT;
+      var lines = wrap(n.desc, maxW - 24);
+      var wmax = 0;
+      lines.forEach(function (l) { wmax = Math.max(wmax, ctx.measureText(l).width); });
+      ctx.font = "650 13px " + FONT;
+      wmax = Math.max(wmax, ctx.measureText(title).width + 16);
+      ctx.font = "500 11.5px " + FONT;
+      if (n.meta) wmax = Math.max(wmax, ctx.measureText(n.meta).width);
+      var metaH = n.meta ? 17 : 0;
+      var tw = Math.ceil(wmax + 24), th = 14 + 17 + metaH + lines.length * 17 + 8;
+      var nsx = (n.x - camX) * s, nsy = mapTop + n.y * s, nh = (n.radio ? 64 : n.h) * s;
+      var ty = n.y < 190 ? nsy + nh / 2 + 10 : nsy - nh / 2 - 10 - th;
+      ty = Math.max(mapTop - 40, Math.min(viewH - th - 6, ty));
+      var tx = Math.max(10, Math.min(viewW - tw - 10, nsx - tw / 2));
+      rr(tx, ty, tw, th, 10);
+      ctx.fillStyle = "rgba(6, 14, 38, 0.95)";
+      ctx.fill();
+      ctx.strokeStyle = rgba(c, 0.85);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = rgba(c, 1);
+      ctx.beginPath(); ctx.arc(tx + 16, ty + 21, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "650 13px " + FONT;
+      ctx.fillText(title, tx + 26, ty + 21);
+      if (n.meta) {
+        ctx.font = "500 11.5px " + FONT;
+        ctx.fillStyle = rgba(c, 0.95);
+        ctx.fillText(n.meta, tx + 12, ty + 39);
+      }
+      ctx.fillStyle = "rgba(196, 208, 238, 1)";
+      ctx.font = "400 12.5px " + FONT;
+      lines.forEach(function (l, i) { ctx.fillText(l, tx + 12, ty + 40 + metaH + i * 17); });
+    }
+
+    function draw() {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, viewW, viewH);
+      drawStrip();
+      drawWaves();
+      var act = activeNode(), nb = neighbours(act);
+      ctx.setTransform(dpr * s, 0, 0, dpr * s, -dpr * camX * s, dpr * mapTop);
+      drawEdges(act);
+      drawRings();
+      drawPackets();
+      drawNodes(act, nb);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (act) drawTooltip(act);
+    }
+
+    function update(dt) {
+      clock += dt;
+      t += dt;
+      mouse.active += (mouse.target - mouse.active) * Math.min(1, dt * 4);
+      edges.forEach(function (e) {
+        e.acc += dt * e.r * (0.6 + Math.random() * 0.8);
+        if (e.acc >= 1 && packets.length < 160) {
+          e.acc -= 1;
+          var fwd = true;
+          if (e.bi) { e.flip = !e.flip; fwd = e.flip; }
+          packets.push({ e: e, t: 0, fwd: fwd, dur: Math.max(0.6, e.len / 105) * (0.85 + Math.random() * 0.3) });
+        }
+      });
+      for (var i = packets.length - 1; i >= 0; i--) {
+        var p = packets[i];
+        p.t += dt / p.dur;
+        if (p.t >= 1) {
+          var target = p.fwd ? p.e.B : p.e.A;
+          target.pulse = 1;
+          if (p.e.burst && p.fwd) rings.push({ x: target.x, y: target.y - 14, r: 4, max: 95, c: COLORS.amber, a: 0.85, sp: 72, burst: true });
+          packets.splice(i, 1);
+        }
+      }
+      nodes.forEach(function (n) {
+        n.pulse = Math.max(0, n.pulse - dt * 1.5);
+        if (n.radio) {
+          n.ringT -= dt;
+          if (n.ringT <= 0) { n.ringT = 2.4 + Math.random() * 0.6; rings.push({ x: n.x, y: n.y - 14, r: 4, max: 62, c: COLORS.teal, a: 0.5, sp: 36 }); }
+        }
+      });
+      for (var j = rings.length - 1; j >= 0; j--) { rings[j].r += rings[j].sp * dt; if (rings[j].r >= rings[j].max) rings.splice(j, 1); }
+      if (clock - tourAt > 3.4) { tourIdx++; tourAt = clock; }
+      if (!fit) {
+        var act = activeNode();
+        if (act && !hovered) camX += (clampCam(act.x - viewW / s / 2) - camX) * Math.min(1, dt * 2.2);
+      }
+    }
+
     function frame(ts) {
       if (!running) return;
       if (!last) last = ts;
-      t += Math.min(50, ts - last) / 1000;
+      var dt = Math.min(0.05, (ts - last) / 1000);
       last = ts;
+      update(dt);
       draw();
       raf = requestAnimationFrame(frame);
     }
     function start() { if (running || REDUCED) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
     function stop() { running = false; cancelAnimationFrame(raf); }
-    function onMove(e) { var r = host.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.target = 1; }
-    function onLeave() { mouse.target = 0; }
+
+    function hit(px, py) {
+      var wx = px / s + camX, wy = (py - mapTop) / s;
+      for (var i = nodes.length - 1; i >= 0; i--) {
+        var n = nodes[i];
+        if (n.radio) { if (Math.abs(wx - n.x) <= 34 && wy >= n.y - 28 && wy <= n.y + 36) return n; }
+        else if (n.chip) { if (Math.abs(wx - n.x) <= n.w / 2 + 4 && Math.abs(wy - n.y) <= n.h / 2 + 5) return n; }
+        else if (Math.abs(wx - n.x) <= n.w / 2 + 6 && Math.abs(wy - n.y) <= n.h / 2 + 6) return n;
+      }
+      return null;
+    }
+    function local(e) { var r = host.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+    function onMove(e) {
+      var p = local(e);
+      mouse.x = p.x; mouse.target = 1; lastPointer = clock;
+      if (e.pointerType !== "touch") hovered = p.y >= mapTop - 10 ? hit(p.x, p.y) : null;
+      if (REDUCED) draw();
+    }
+    function onLeave() { mouse.target = 0; hovered = null; if (REDUCED) draw(); }
+    function onDown(e) {
+      if (e.pointerType !== "touch") return;
+      var p = local(e), n = hit(p.x, p.y);
+      if (n) {
+        selected = n; selectedAt = clock; lastPointer = clock;
+        if (REDUCED) { if (!fit) camX = clampCam(n.x - viewW / s / 2); draw(); }
+      }
+    }
     function inViewport() { var r = host.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; }
     function onVis() { if (document.hidden) stop(); else if (inViewport()) start(); }
 
-    resize();
-    window.addEventListener("resize", resize);
+    layout();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); });
+    window.addEventListener("resize", layout);
     host.addEventListener("pointermove", onMove);
     host.addEventListener("pointerleave", onLeave);
+    host.addEventListener("pointerdown", onDown);
     document.addEventListener("visibilitychange", onVis);
     var io = null;
     if ("IntersectionObserver" in window) {
@@ -580,9 +1035,10 @@ function WaveField() {
     } else { start(); }
     return function () {
       stop();
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", layout);
       host.removeEventListener("pointermove", onMove);
       host.removeEventListener("pointerleave", onLeave);
+      host.removeEventListener("pointerdown", onDown);
       document.removeEventListener("visibilitychange", onVis);
       if (io) io.disconnect();
     };
@@ -613,11 +1069,27 @@ function Hero() {
     el.style.setProperty("--my", (e.clientY - r.top) + "px");
   }
   return h("header", { className: "hero", id: "top" },
-    h(WaveField, null),
+    h(HeroScene, null),
+    h("p", { className: "sr-only" }, "Animated map of systems Karan has built. Multiple departments (R&D, QA, Manufacturing, Calibration, Sales, vendors, and Admin) use a React front end with a drag-and-drop key-definition builder and 50+ feature modules. The Java entitlement platform runs on Tomcat and Linux with MySQL, NTLM single sign-on, JWT, and Jenkins. It integrates Dynamics 365 through .NET middleware, migrated a legacy SQL Server tool with a C# ETL, and issues AES-signed license keys to software-defined radios. OAM software manages the radios through NETCONF, YANG, and SNMP, including firmware upgrades and new frequency bands. Earlier work includes ASP.NET MVC applications integrated with NetSuite. ShopFloor IQ runs plant manuals through Voyage AI, pgvector, and Gemini to cited answers and a documentation gap report."),
+    h("div", { className: "map-head", "aria-hidden": "true" },
+      h("div", { className: "container" },
+        h("p", { className: "map-title" }, h("b", null, "Systems I\u2019ve built and connected. "),
+          h("span", { className: "hint-hover" }, "Hover a system for details."),
+          h("span", { className: "hint-touch" }, "Tap a system for details.")),
+        h("div", { className: "legend" },
+          h("span", null, h("i", { style: { background: "#86A6FF" } }), "Platform"),
+          h("span", null, h("i", { style: { background: "#F29A26" } }), "Security and keys"),
+          h("span", null, h("i", { style: { background: "#5EDCC8" } }), "Telecom"),
+          h("span", null, h("i", { style: { background: "#B298FF" } }), "AI"),
+          h("span", null, h("i", { style: { background: "#CDD8F2" } }), "People and outside systems"),
+          h("span", null, h("i", { style: { background: "#FF7070" } }), "Alarms")
+        )
+      )
+    ),
     h("div", { className: "container hero-grid" },
       h("div", null,
         h(AnimatedName, { text: "Karan Patel" }),
-        h("p", { className: "hero-role hero-in d1" }, "Full stack developer, Java and React"),
+        h("p", { className: "hero-role hero-in d1" }, "Full stack developer"),
         h("p", { className: "hero-summary hero-in d2" },
           "Five years building enterprise web applications. I co-designed the licensing platform behind Aviat Networks\u2019 software-defined radios, and I now apply large language models to manufacturing workflows."
         ),
@@ -769,7 +1241,7 @@ function Work() {
           { strong: "Under a minute", rest: "to generate keys for newer radios, which the old tool couldn\u2019t license at all" },
           { count: 10, strong: "+ radio models", rest: "and 50+ feature modules defined in the platform" },
           { count: 100, strong: "+ keys a month,", rest: "each AES-encrypted, digitally signed, and bound to a single radio" },
-          { strong: "Seven user groups", rest: "served, from R&D and QA to Manufacturing, Sales, vendors, and Admin" }
+          { strong: "Multiple departments", rest: "served, from R&D and QA to Manufacturing, Sales, vendors, and Admin" }
         ],
         role: "Sole front-end developer. I also wrote backend endpoints, key generation logic, and role-based access combining NTLM single sign-on with JWT, and I set up the Tomcat, SSL, and MySQL environments.",
         stack: "Java, Eclipse Jersey, JDBC, MySQL, React, Redux, Tailwind CSS, Chakra UI, Tomcat on Linux, Jenkins",
